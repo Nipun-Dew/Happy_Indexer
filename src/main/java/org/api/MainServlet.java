@@ -16,13 +16,12 @@ import java.util.List;
 @WebServlet("/*")
 public class MainServlet extends HttpServlet {
     private final List<HappyIndexEntry> data = new ArrayList<>();
-
     @Override
     public void init() throws ServletException {
         try {
             List<HappyIndexEntry> extractedData;
 
-            try (FileReader fileReader = new FileReader("2019.csv")) {
+            try (FileReader fileReader = new FileReader("src/main/resources/2019.csv")) {
                 extractedData = new CsvToBeanBuilder<HappyIndexEntry>(fileReader)
                         .withType(HappyIndexEntry.class).build().parse();
             }
@@ -41,7 +40,9 @@ public class MainServlet extends HttpServlet {
 
         String path = request.getRequestURI()
                 .substring(request.getContextPath().length())
-                .replaceAll("[/]+$", "");
+                .replaceFirst("^/[^/]+", "");
+
+        System.out.println(path);
 
         response.setContentType("text/plain");
 

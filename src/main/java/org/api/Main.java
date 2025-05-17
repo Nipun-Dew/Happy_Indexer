@@ -1,21 +1,37 @@
-/*
 package org.api;
 
-import com.opencsv.bean.CsvToBeanBuilder;
-import org.api.model.HappyIndexEntry;
+import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.startup.Tomcat;
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException {
-        List<HappyIndexEntry> dataList = new CsvToBeanBuilder<HappyIndexEntry>(new FileReader("2019.csv"))
-                .withType(HappyIndexEntry.class).build().parse();
+    public static void main(String[] args) throws LifecycleException {
 
-        for (HappyIndexEntry entry : dataList) {
-            System.out.println(entry.getCountry() + ": " + entry.getRank());
+        try {
+            // instantiate a tomcat embedded server
+            Tomcat tomcat = new Tomcat();
+
+            // config the server
+            tomcat.setPort(8080);
+            tomcat.getConnector();
+
+            // Add base url for the server
+            Context ctx = tomcat.addWebapp("api/", new File("src/main/webapp").getAbsolutePath());
+
+            Tomcat.addServlet(ctx, "MainServlet", new MainServlet());
+            ctx.addServletMappingDecoded("/happyIndex/*", "MainServlet");
+
+            tomcat.start();
+
+            System.out.println("Server started!!!");
+
+            tomcat.getServer().await();
+
+        } catch(Exception e) {
+            System.out.println(e);
         }
     }
 }
-*/
